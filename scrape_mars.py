@@ -35,12 +35,11 @@ def scrape():
 
     time.sleep(1)
 
-    # Click through to full image
     browser.click_link_by_partial_text('FULL IMAGE')
     time.sleep(2)
     browser.click_link_by_partial_text('more info')
 
-    # Scrape page into Soup
+    # Scrape page 
     html = browser.html
     soup = bs(html, 'html.parser')
 
@@ -48,7 +47,6 @@ def scrape():
     results = soup.find_all('figure', class_='lede')
     relative_img_path = results[0].a['href']
     featured_img = 'https://www.jpl.nasa.gov' + relative_img_path
-
 
     # Space fact site
     tables = pd.read_html('https://galaxyfacts-mars.com/')
@@ -63,8 +61,7 @@ def scrape():
     mars_facts_table = df.to_html(classes='data table', index=False, header=False, border=0)
 
 
-
-    # --- Visit USGS Astrogeology Site ---
+    #visit next site
     browser.visit('https://marshemispheres.com/')
     
     time.sleep(1)
@@ -90,10 +87,8 @@ def scrape():
     # Iterate through thumbnail links for full-size image
     for thumbnail in thumbnail_results:
         
-        # If the thumbnail element has an image...
         if (thumbnail.img):
             
-            # then grab the attached link
             thumbnail_url = 'https://marshemispheres.com/' + thumbnail['href']
             
             # Append list with links
@@ -109,17 +104,17 @@ def scrape():
         html = browser.html
         soup = bs(html, 'html.parser')
         
-        # Scrape each page for the relative image path
+        # Scrape each page 
         results = soup.find_all('img', class_='wide-image')
         relative_img_path = results[0]['src']
         
         # Combine the reltaive image path to get the full url
         img_link = 'https://marshemispheres.com/' + relative_img_path
         
-        # Add full image links to a list
+        # Add to a list
         full_imgs.append(img_link)
 
-    # Zip together the list of hemisphere names and hemisphere image links
+    # Zip together the list
     mars_hemi_zip = zip(hemi_names, full_imgs)
 
     hemisphere_image_urls = []
